@@ -205,3 +205,96 @@ resource "aws_instance" "mercury_bastion_host" {
     Name = "Mercury Production Bastion Host"
   }
 }
+
+## Create Cloudwatch ##
+resource "aws_cloudwatch_dashboard" "main" {
+  dashboard_name = "mercury-dashboard-terraform"
+
+  dashboard_body = <<EOF
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [
+            "AWS/AutoScaling",
+            "GroupTotalCapacity",
+            "AutoScalingGroupName",
+            "MercuryProd-ASG-API"
+          ],
+          [
+            ".",
+            "GroupTotalInstances",
+            ".",
+            "."            
+          ],
+          [
+            ".",
+            "GroupInServiceInstances",
+            ".",
+            "."            
+          ]
+        ],
+        "period": 300,
+        "stat": "Average",
+        "region": "us-east-2",
+        "title": "API Target Group"
+      }
+    }, 
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [
+            "AWS/AutoScaling",
+            "GroupTotalCapacity",
+            "AutoScalingGroupName",
+            "MercuryProd-ASG-React"
+          ],
+          [
+            ".",
+            "GroupTotalInstances",
+            ".",
+            "."            
+          ],
+          [
+            ".",
+            "GroupInServiceInstances",
+            ".",
+            "."            
+          ]
+        ],
+        "period": 300,
+        "stat": "Average",
+        "region": "us-east-2",
+        "title": "REACT Target Group"
+      }
+    }, 
+    {
+      "type": "metric",
+      "properties": {
+          "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "TargetResponseTime",
+            "LoadBalancer",
+            "app/MercuryProd-AppLB/a0179251fdfc7f53"            
+          ],
+          [
+            ".",
+            "RequestCount",
+            ".",
+            "."            
+          ]
+        ],
+        "period": 300,
+        "stat": "Average",
+        "region": "us-east-2",
+        "title": "ALB "
+      }
+    }
+  ]
+}
+EOF
+}
