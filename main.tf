@@ -226,6 +226,7 @@ resource "aws_cloudwatch_dashboard" "mercury_prod_cloudwatch_dashboard" {
             "widgets": [
               {
                 "type": "metric",
+                "width": 8,
                 "properties": {
                   "metrics": [
                     [
@@ -250,6 +251,7 @@ resource "aws_cloudwatch_dashboard" "mercury_prod_cloudwatch_dashboard" {
               }, 
               {
                 "type": "metric",
+                "width": 8,
                 "properties": {
                   "metrics": [
                     [
@@ -274,6 +276,7 @@ resource "aws_cloudwatch_dashboard" "mercury_prod_cloudwatch_dashboard" {
               }, 
               {
                 "type": "metric",
+                "width": 8,
                 "properties": {
                     "metrics": [
                     [
@@ -294,6 +297,17 @@ resource "aws_cloudwatch_dashboard" "mercury_prod_cloudwatch_dashboard" {
                   "region": "${var.region}",
                   "title": "ALB ",
                   "liveData": true
+                }
+              },
+              {
+                "type": "log",
+                "width": 24,
+                "height": 6,
+                "properties": {
+                  "region": "${var.region}",
+                  "title": "API (Application Log)",
+                  "query": "SOURCE 'MercuryProduction-API'| fields @timestamp, @message \n| sort @timestamp desc \n| limit 20",
+                  "view": "table"
                 }
               }
             ]
