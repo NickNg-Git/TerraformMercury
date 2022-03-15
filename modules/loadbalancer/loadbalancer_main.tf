@@ -21,9 +21,9 @@ resource "aws_lb_target_group" "mercury_app_lb_target_group_react" {
     enabled = true
     port = 80
     path = "/"
-    timeout = "20"
-    healthy_threshold = 2
-    interval = 30
+    timeout = "30"
+    healthy_threshold = 3
+    interval = 45
   }
 }
 
@@ -31,16 +31,16 @@ resource "aws_lb_target_group" "mercury_app_lb_target_group_api" {
   name     = "MercuryProd-AppLB-TG-API"
   port     = 80
   protocol = "HTTP"
-  slow_start = 180
+  slow_start = 60
   vpc_id   = "${var.vpc_id}"
   target_type = "instance"
   health_check {
     enabled = true
     port = 80
     path = "/api/"
-    timeout = "20"
+    timeout = "30"
     healthy_threshold = 3
-    interval = 60
+    interval = 45
   }
 }
 

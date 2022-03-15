@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "3.47.0"
+      version = ">=3.47.0"
     }
   }
 }
@@ -218,94 +218,85 @@ resource "aws_instance" "mercury_bastion_host" {
 }
 
 ## Create Cloudwatch ##
-resource "aws_cloudwatch_dashboard" "main" {
-  dashboard_name = "mercury-dashboard-terraform"
+resource "aws_cloudwatch_dashboard" "mercury_prod_cloudwatch_dashboard" {
+  dashboard_name = "MercuryProduction-Dashboard"
 
   dashboard_body = <<EOF
-{
-  "widgets": [
-    {
-      "type": "metric",
-      "properties": {
-        "metrics": [
-          [
-            "AWS/AutoScaling",
-            "GroupTotalCapacity",
-            "AutoScalingGroupName",
-            "MercuryProd-ASG-API"
-          ],
-          [
-            ".",
-            "GroupTotalInstances",
-            ".",
-            "."            
-          ],
-          [
-            ".",
-            "GroupInServiceInstances",
-            ".",
-            "."            
-          ]
-        ],
-        "period": 300,
-        "stat": "Average",
-        "region": "us-east-2",
-        "title": "API Target Group"
-      }
-    }, 
-    {
-      "type": "metric",
-      "properties": {
-        "metrics": [
-          [
-            "AWS/AutoScaling",
-            "GroupTotalCapacity",
-            "AutoScalingGroupName",
-            "MercuryProd-ASG-React"
-          ],
-          [
-            ".",
-            "GroupTotalInstances",
-            ".",
-            "."            
-          ],
-          [
-            ".",
-            "GroupInServiceInstances",
-            ".",
-            "."            
-          ]
-        ],
-        "period": 300,
-        "stat": "Average",
-        "region": "us-east-2",
-        "title": "REACT Target Group"
-      }
-    }, 
-    {
-      "type": "metric",
-      "properties": {
-          "metrics": [
-          [
-            "AWS/ApplicationELB",
-            "TargetResponseTime",
-            "LoadBalancer",
-            "app/MercuryProd-AppLB/a0179251fdfc7f53"            
-          ],
-          [
-            ".",
-            "RequestCount",
-            ".",
-            "."            
-          ]
-        ],
-        "period": 300,
-        "stat": "Average",
-        "region": "us-east-2",
-        "title": "ALB "
-      }
-    }
-  ]
-}
-EOF
+          {
+            "widgets": [
+              {
+                "type": "metric",
+                "properties": {
+                  "metrics": [
+                    [
+                      "AWS/AutoScaling",
+                      "GroupDesiredCapacity",
+                      "AutoScalingGroupName",
+                      "${module.autoscalinggroup_api.autoscalegroup_name}"
+                    ],
+                    [
+                      "AWS/AutoScaling",
+                      "GroupInServiceInstances",
+                      "AutoScalingGroupName",
+                      "${module.autoscalinggroup_api.autoscalegroup_name}"           
+                    ]
+                  ],
+                  "period": 300,
+                  "stat": "Average",
+                  "region": "${var.region}",
+                  "title": "API Target Group",
+                  "liveData": true
+                }
+              }, 
+              {
+                "type": "metric",
+                "properties": {
+                  "metrics": [
+                    [
+                      "AWS/AutoScaling",
+                      "GroupDesiredCapacity",
+                      "AutoScalingGroupName",
+                      "${module.autoscalinggroup_react.autoscalegroup_name}"
+                    ],
+                    [
+                      "AWS/AutoScaling",
+                      "GroupInServiceInstances",
+                      "AutoScalingGroupName",
+                      "${module.autoscalinggroup_react.autoscalegroup_name}"          
+                    ]
+                  ],
+                  "period": 300,
+                  "stat": "Average",
+                  "region": "${var.region}",
+                  "title": "REACT Target Group",
+                  "liveData": true
+                }
+              }, 
+              {
+                "type": "metric",
+                "properties": {
+                    "metrics": [
+                    [
+                      "AWS/ApplicationELB",
+                      "TargetResponseTime",
+                      "LoadBalancer",
+                      "${module.loadbalancer.mercury_app_lb_arnsuffix}"            
+                    ],
+                    [
+                      "AWS/ApplicationELB",
+                      "RequestCount",
+                      "LoadBalancer",
+                      "${module.loadbalancer.mercury_app_lb_arnsuffix}"            
+                    ]
+                  ],
+                  "period": 300,
+                  "stat": "Average",
+                  "region": "${var.region}",
+                  "title": "ALB ",
+                  "liveData": true
+                }
+              }
+            ]
+          }
+          EOF
 }

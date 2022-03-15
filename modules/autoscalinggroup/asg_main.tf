@@ -9,6 +9,8 @@ resource "aws_autoscaling_group" "autoscale_template" {
 
   target_group_arns = var.target_group_arns
 
+  enabled_metrics = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupPendingInstances", "GroupStandbyInstances", "GroupTerminatingInstances", "GroupTotalInstances"]
+
   launch_template {
     id      = var.launchtemplate_id
     version = "$Latest"
