@@ -10,13 +10,6 @@ resource "aws_security_group" "mercury_sg_applb" {
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
-  ingress {
-    description      = "TCP from Public to LB for API App"
-    from_port        = 8080
-    to_port          = 8080
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
   egress {
     from_port        = 0
     to_port          = 0
@@ -84,10 +77,10 @@ resource "aws_security_group" "mercury_sg_db" {
     security_groups = ["${resource.aws_security_group.mercury_sg_apiapp.id}"]
   }
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port        = 1
+    to_port          = 1
+    protocol         = "tcp"
+    cidr_blocks      = ["127.0.0.1/32"]
   }
   tags = {
     Name = "Mercury-Prod-SG-DB"

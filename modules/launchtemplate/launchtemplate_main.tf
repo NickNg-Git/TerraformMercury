@@ -9,6 +9,10 @@ resource "aws_launch_template" "base_launch_template" {
 
   user_data = base64encode(var.userdata_content)
 
+  iam_instance_profile {
+    arn = "${var.instance_profile_arn}"
+  }
+
   tag_specifications {
     resource_type = "instance"
 

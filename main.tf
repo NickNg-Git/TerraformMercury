@@ -95,7 +95,7 @@ resource "aws_instance" "mercury_prod_mailman_instance" {
 
 ## Load User Data File for API and React ##
 data "http" "raw_userdata_api" {
-  url = "https://raw.githubusercontent.com/JeremyKuah/SmartBank_UserData/main/userdata_api.sh"
+  url = "https://raw.githubusercontent.com/JeremyKuah/SmartBank_UserData/main/userdata_api_cloudwatch.sh"
 }
 data "template_file" "userdata_api" {
   template = data.http.raw_userdata_api.body
@@ -116,28 +116,39 @@ data "template_file" "userdata_react" {
   }
 }
 
+## Create IAM Role Instance for Cloud Watch Agent ##
+data "aws_iam_role" "mercury_prod_cloudwatchagentserverrole" {
+  name = "Mercury_CloudWatchAgentServerRole"
+}
+resource "aws_iam_instance_profile" "mercury_prod_launchtemplate_instanceprofile" {
+  name = "MercuryProduction_LaunchTemplateIamInstanceProfile"
+  role = data.aws_iam_role.mercury_prod_cloudwatchagentserverrole.name
+}
+
 ## Create Launch Template (API) ##
 module "launchtemplate_api" {
-  source             = "./modules/launchtemplate"
-  ami_id             = var.ami_id
-  template_name      = "MercuryProduction-API-Template"
-  instance_type      = "t2.micro"
-  userdata_content   = data.template_file.userdata_api.rendered
-  key_name           = aws_key_pair.mercury_keypair.key_name
-  instance_name      = "Mercury Production - API App"
-  security_group_ids = ["${module.securitygroup.sg_apiapp_id}", "${module.securitygroup.sg_bastionguest_id}"]
+  source               = "./modules/launchtemplate"
+  ami_id               = var.ami_id
+  template_name        = "MercuryProduction-API-Template"
+  instance_type        = "t2.micro"
+  userdata_content     = data.template_file.userdata_api.rendered
+  key_name             = aws_key_pair.mercury_keypair.key_name
+  instance_profile_arn = resource.aws_iam_instance_profile.mercury_prod_launchtemplate_instanceprofile.arn
+  instance_name        = "Mercury Production - API App"
+  security_group_ids   = ["${module.securitygroup.sg_apiapp_id}", "${module.securitygroup.sg_bastionguest_id}"]
 }
 
 ## Create Launch Template (React) ##
 module "launchtemplate_react" {
-  source             = "./modules/launchtemplate"
-  ami_id             = var.ami_id
-  template_name      = "MercuryProduction-React-Template"
-  instance_type      = "t2.micro"
-  userdata_content   = data.template_file.userdata_react.rendered
-  key_name           = aws_key_pair.mercury_keypair.key_name
-  instance_name      = "Mercury Production - React App"
-  security_group_ids = ["${module.securitygroup.sg_reactapp_id}", "${module.securitygroup.sg_bastionguest_id}"]
+  source               = "./modules/launchtemplate"
+  ami_id               = var.ami_id
+  template_name        = "MercuryProduction-React-Template"
+  instance_type        = "t2.micro"
+  userdata_content     = data.template_file.userdata_react.rendered
+  key_name             = aws_key_pair.mercury_keypair.key_name
+  instance_profile_arn = resource.aws_iam_instance_profile.mercury_prod_launchtemplate_instanceprofile.arn
+  instance_name        = "Mercury Production - React App"
+  security_group_ids   = ["${module.securitygroup.sg_reactapp_id}", "${module.securitygroup.sg_bastionguest_id}"]
 }
 
 ## Create Auto Scaling Group ##
