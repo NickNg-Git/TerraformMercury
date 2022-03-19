@@ -1,2 +1,2 @@
 variable "vpc_id" {}
-variable "vpc_cidr_block" {}
+variable "private_subnet_app_cidr_list" {}

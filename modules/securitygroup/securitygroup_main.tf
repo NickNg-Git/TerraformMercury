@@ -11,10 +11,10 @@ resource "aws_security_group" "mercury_sg_applb" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = var.private_subnet_app_cidr_list
   }
   tags = {
     Name = "Mercury-Prod-SG-AppLB"
@@ -121,10 +121,10 @@ resource "aws_security_group" "mercury_sg_bastionhost" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = var.private_subnet_app_cidr_list
   }
   tags = {
     Name = "Mercury-Prod-SG-BastionHost"

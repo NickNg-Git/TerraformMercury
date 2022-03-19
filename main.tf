@@ -41,9 +41,9 @@ module "network" {
 
 ## Create Security Groups ##
 module "securitygroup" {
-  source         = "./modules/securitygroup"
-  vpc_id         = module.network.vpc_id
-  vpc_cidr_block = module.network.vpc_cidr_block
+  source                        = "./modules/securitygroup"
+  vpc_id                        = module.network.vpc_id
+  private_subnet_app_cidr_list  = module.network.private_subnets_app_cidr_list
 }
 
 ## Create Load Balancer ##
@@ -177,7 +177,7 @@ module "autoscalinggroup_react" {
 resource "aws_autoscaling_policy" "api_autoscalingpolicy" {
   name                   = "MercuryProd-ASG-API-AutoScalePolicy"
   policy_type            = "TargetTrackingScaling"
-  autoscaling_group_name = module.autoscalinggroup_api.autoscalegroup_name
+  autoscaling_group_name = "${module.autoscalinggroup_api.autoscalegroup_name}"
 
   target_tracking_configuration {
     predefined_metric_specification {
@@ -191,7 +191,7 @@ resource "aws_autoscaling_policy" "api_autoscalingpolicy" {
 resource "aws_autoscaling_policy" "react_autoscalingpolicy" {
   name                   = "MercuryProd-ASG-React-AutoScalePolicy"
   policy_type            = "TargetTrackingScaling"
-  autoscaling_group_name = module.autoscalinggroup_react.autoscalegroup_name
+  autoscaling_group_name = "${module.autoscalinggroup_react.autoscalegroup_name}"
 
   target_tracking_configuration {
     predefined_metric_specification {

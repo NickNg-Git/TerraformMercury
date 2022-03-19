@@ -34,3 +34,11 @@ output "private_subnet_apps_az3_id" { value = aws_subnet.mercury_az3_private_app
 output "private_subnet_db_az1_id" { value = aws_subnet.mercury_az1_private_db.id }
 output "private_subnet_db_az2_id" { value = aws_subnet.mercury_az2_private_db.id }
 output "private_subnet_db_az3_id" { value = aws_subnet.mercury_az3_private_db.id }
+
+output "private_subnets_app_cidr_list" {
+  value = [
+    "${resource.aws_subnet.mercury_az1_private_apps.cidr_block}",
+    "${resource.aws_subnet.mercury_az2_private_apps.cidr_block}",
+    "${resource.aws_subnet.mercury_az3_private_apps.cidr_block}"
+  ]
+}
