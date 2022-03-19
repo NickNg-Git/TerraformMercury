@@ -224,28 +224,36 @@ resource "aws_cloudwatch_dashboard" "mercury_prod_cloudwatch_dashboard" {
   dashboard_body = <<EOF
           {
             "widgets": [
+              
               {
                 "type": "metric",
                 "width": 8,
                 "properties": {
-                  "metrics": [
+                    "metrics": [
                     [
-                      "AWS/AutoScaling",
-                      "GroupDesiredCapacity",
-                      "AutoScalingGroupName",
-                      "${module.autoscalinggroup_api.autoscalegroup_name}"
+                      "AWS/ApplicationELB",
+                      "TargetResponseTime",
+                      "LoadBalancer",
+                      "${module.loadbalancer.mercury_app_lb_arnsuffix}"            
                     ],
-                    [
-                      "AWS/AutoScaling",
-                      "GroupInServiceInstances",
-                      "AutoScalingGroupName",
-                      "${module.autoscalinggroup_api.autoscalegroup_name}"           
-                    ]
                   ],
                   "period": 300,
                   "stat": "Average",
                   "region": "${var.region}",
-                  "title": "API Target Group",
+                  "title": "ALB ",
+                  "liveData": true
+                }                    
+                    [
+                      "AWS/ApplicationELB",
+                      "RequestCount",
+                      "LoadBalancer",
+                      "${module.loadbalancer.mercury_app_lb_arnsuffix}"            
+                    ]
+                  ],
+                  "period": 60,
+                  "stat": "sum",
+                  "region": "${var.region}",
+                  "title": "ALB ",
                   "liveData": true
                 }
               }, 
@@ -267,7 +275,7 @@ resource "aws_cloudwatch_dashboard" "mercury_prod_cloudwatch_dashboard" {
                       "${module.autoscalinggroup_react.autoscalegroup_name}"          
                     ]
                   ],
-                  "period": 300,
+                  "period": 60,
                   "stat": "Average",
                   "region": "${var.region}",
                   "title": "REACT Target Group",
@@ -278,24 +286,24 @@ resource "aws_cloudwatch_dashboard" "mercury_prod_cloudwatch_dashboard" {
                 "type": "metric",
                 "width": 8,
                 "properties": {
-                    "metrics": [
+                  "metrics": [
                     [
-                      "AWS/ApplicationELB",
-                      "TargetResponseTime",
-                      "LoadBalancer",
-                      "${module.loadbalancer.mercury_app_lb_arnsuffix}"            
+                      "AWS/AutoScaling",
+                      "GroupDesiredCapacity",
+                      "AutoScalingGroupName",
+                      "${module.autoscalinggroup_api.autoscalegroup_name}"
                     ],
                     [
-                      "AWS/ApplicationELB",
-                      "RequestCount",
-                      "LoadBalancer",
-                      "${module.loadbalancer.mercury_app_lb_arnsuffix}"            
+                      "AWS/AutoScaling",
+                      "GroupInServiceInstances",
+                      "AutoScalingGroupName",
+                      "${module.autoscalinggroup_api.autoscalegroup_name}"           
                     ]
                   ],
-                  "period": 300,
+                  "period": 60,
                   "stat": "Average",
                   "region": "${var.region}",
-                  "title": "ALB ",
+                  "title": "API Target Group",
                   "liveData": true
                 }
               },
